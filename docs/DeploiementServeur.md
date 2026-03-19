@@ -117,3 +117,26 @@ server {
     }
 }
 ```
+
+### 3. Installer Certbot (SSL Let's Encrypt)
+
+```bash
+sudo dnf install epel-release -y
+sudo dnf install certbot python3-certbot-nginx -y
+```
+Générer le certificat SSL :
+```bash
+sudo certbot --nginx -d martinelaplante.com -d www.martinelaplante.com
+```
+
+### 4. Tester et recharger Nginx
+
+Tester la configuration :
+```bash
+sudo nginx -t
+```
+Recharger :
+```bash
+sudo systemctl reload nginx
+```
+

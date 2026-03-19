@@ -172,14 +172,16 @@ Lancer le script de sécurisation :
 ```bash
 sudo mysql_secure_installation
 ```
-Répondre aux questions :
+### Réponses recommandées lors de `mysql_secure_installation`
 
-Question	Réponse recommandée
-Set root password	Y
-Remove anonymous users	Y
-Disallow root login remotely	Y
-Remove test database	Y
-Reload privilege tables	Y
+| Question | Réponse recommandée |
+|----------|--------------------|
+| Set root password | Y |
+| Remove anonymous users | Y |
+| Disallow root login remotely | Y |
+| Remove test database | Y |
+| Reload privilege tables | Y |
+
 3. Se connecter à MariaDB
 ```bash
 sudo mysql -u root -p

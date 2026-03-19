@@ -51,7 +51,7 @@ sudo firewall-cmd --permanent --add-port=8883/tcp
 sudo firewall-cmd --permanent --add-port=9001/tcp
 
 sudo firewall-cmd --reload
-
+```
 
 ## Configuration du reverse proxy (Nginx)
 

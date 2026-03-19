@@ -139,4 +139,66 @@ Recharger :
 ```bash
 sudo systemctl reload nginx
 ```
+## Installation et configuration de MariaDB
 
+Cette section explique comment :
+
+- installer MariaDB
+- sécuriser le serveur de base de données
+- créer une base de données `PrjTechno`
+- créer un utilisateur dédié `prjtechno_user`
+
+---
+
+### 1. Installer MariaDB
+
+Installer MariaDB :
+
+```bash
+sudo dnf install mariadb-server -y
+```
+Démarrer et activer le service :
+```bash
+sudo systemctl enable mariadb
+sudo systemctl start mariadb
+```
+Vérifier :
+```bash
+sudo systemctl status mariadb
+```
+2. Sécuriser MariaDB
+
+Lancer le script de sécurisation :
+```bash
+sudo mysql_secure_installation
+```
+Répondre aux questions :
+
+Question	Réponse recommandée
+Set root password	Y
+Remove anonymous users	Y
+Disallow root login remotely	Y
+Remove test database	Y
+Reload privilege tables	Y
+3. Se connecter à MariaDB
+```bash
+sudo mysql -u root -p
+```
+Entrer le mot de passe root défini précédemment.
+
+4. Créer la base de données
+```bash
+CREATE DATABASE PrjTechno;
+```
+5. Créer un utilisateur dédié
+```bash
+CREATE USER 'prjtechno_user'@'localhost' IDENTIFIED BY 'MotDePasse';
+```
+
+Remplacer MotDePasse par un vrai mot de passe fort
+
+6. Donner les permissions
+```bash
+GRANT ALL PRIVILEGES ON PrjTechno.* TO 'prjtechno_user'@'localhost';
+FLUSH PRIVILEGES;
+```

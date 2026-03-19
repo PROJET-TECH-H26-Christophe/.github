@@ -68,7 +68,7 @@ Ce projet a pour objectif de :
 
 Il suffit de cloner le projet et suivre les documentations ci-dessous
 
-- [Documentation Configuration Environnement Developpement](./Docs/READMEENVDEV.MD)
+- [Documentation Configuration Environnement Developpement](https://github.com/PROJET-TECH-H26-Christophe/.github/blob/main/docs/DeploiementServeur.md)
 - [Documentation App Native](./FabLab/README.MD)
 - [Documentation API](https://github.com/PROJET-TECH-H26-Christophe/PrjTechnoApi/blob/main/README.md)
 - [Documentation Objet Connecté]([./Playwright/README.MD](https://github.com/PROJET-TECH-H26-Christophe/PrjTechnoObjCon/blob/main/README.md))

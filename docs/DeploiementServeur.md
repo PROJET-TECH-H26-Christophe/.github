@@ -21,8 +21,6 @@ Avant de commencer, assurez-vous d’avoir :
 - un accès **SSH**
 - un utilisateur avec les droits `sudo`
 - un nom de domaine ou une adresse IP publique
-- le code source du projet disponible sur GitHub
-- les ports nécessaires ouverts dans le firewall
 
 ## Configuration du firewall (ports à ouvrir)
 
@@ -53,3 +51,69 @@ sudo firewall-cmd --permanent --add-port=8883/tcp
 sudo firewall-cmd --permanent --add-port=9001/tcp
 
 sudo firewall-cmd --reload
+
+
+## Configuration du reverse proxy (Nginx)
+
+Cette section explique comment configurer **Nginx** pour :
+
+- écouter sur le domaine `martinelaplante.com`
+- rediriger le trafic HTTPS (443) vers l’API Node.js interne (port 3000)
+
+---
+
+### 1. Installer Nginx
+
+```bash
+sudo dnf install nginx -y
+```
+
+Démarrer et activer Nginx :
+```bash
+sudo systemctl enable nginx
+sudo systemctl start nginx
+```
+Vérifier :
+```bash
+sudo systemctl status nginx
+```
+
+### 2. Configurer nginx
+
+Créer un fichier de configuration :
+```bash
+sudo nano /etc/nginx/conf.d/martinelaplante.com.conf
+```
+Ajouter la configuration suivante :
+```bash
+server {
+    listen 80;
+    server_name martinelaplante.com www.martinelaplante.com;
+
+    # Redirection HTTP → HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name martinelaplante.com www.martinelaplante.com;
+
+    # Certificats SSL (à générer avec certbot)
+    ssl_certificate /etc/letsencrypt/live/martinelaplante.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/martinelaplante.com/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```

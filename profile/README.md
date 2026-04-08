@@ -72,7 +72,7 @@ Il suffit de cloner le projet et suivre les documentations ci-dessous
 - [Documentation App Native](https://github.com/PROJET-TECH-H26-Christophe/PrjTechnoNative/blob/main/README.md)
 - [Documentation API](https://github.com/PROJET-TECH-H26-Christophe/PrjTechnoApi/blob/main/README.md)
 - [Documentation Objet Connecté](https://github.com/PROJET-TECH-H26-Christophe/PrjTechnoObjCon/blob/main/README.md)
-
+- [Documentation Base de données](https://github.com/PROJET-TECH-H26-Christophe/.github/blob/main/docs/BD.md)
 <!-- USAGE EXAMPLES -->
 ## Screenshot (À venir)
 

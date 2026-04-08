@@ -1,0 +1,119 @@
+[
+    {
+        "id": "production_tab",
+        "type": "tab",
+        "label": "Production Active",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "mqtt_production_in",
+        "type": "mqtt in",
+        "z": "production_tab",
+        "name": "MQTT Production Active",
+        "topic": "patate/scanner/production",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "mqtt-broker-local",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 190,
+        "y": 300,
+        "wires": [
+            [
+                "format_production_request"
+            ]
+        ]
+    },
+    {
+        "id": "format_production_request",
+        "type": "function",
+        "z": "production_tab",
+        "name": "Préparer requête",
+        "func": "const scannerId = msg.payload.scannerId;\n\nif (!scannerId) {\n    node.warn(\"Requête production sans scannerId ignorée\");\n    return null;\n}\n\nmsg.scannerId = scannerId;\nmsg.payload = {};\nmsg.headers = {\n    \"Content-Type\": \"application/json\",\n    \"x-api-key\": env.get(\"NODERED_API_KEY\")\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 430,
+        "y": 300,
+        "wires": [
+            [
+                "get_active_production"
+            ]
+        ]
+    },
+    {
+        "id": "get_active_production",
+        "type": "http request",
+        "z": "production_tab",
+        "name": "GET /api/productions/active/:scannerId",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:3000/api/productions/active/{{{scannerId}}}",
+        "headers": [],
+        "x": 710,
+        "y": 300,
+        "wires": [
+            [
+                "format_production_response"
+            ]
+        ]
+    },
+    {
+        "id": "format_production_response",
+        "type": "function",
+        "z": "production_tab",
+        "name": "Formater réponse",
+        "func": "msg.topic = 'patate/scanner/production/response';\n\nif (msg.statusCode === 200 && msg.payload.production) {\n    msg.payload = {\n        active: true,\n        productionRunId: msg.payload.production.id,\n        name: msg.payload.production.name\n    };\n} else {\n    msg.payload = {\n        active: false,\n        productionRunId: null\n    };\n}\nreturn msg;",
+        "outputs": 1,
+        "x": 990,
+        "y": 300,
+        "wires": [
+            [
+                "mqtt_production_out"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_production_out",
+        "type": "mqtt out",
+        "z": "production_tab",
+        "name": "MQTT Réponse Production",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "broker": "mqtt-broker-local",
+        "x": 1240,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "mqtt-broker-local",
+        "type": "mqtt-broker",
+        "name": "Mosquitto Local",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "nodered-temperature",
+        "autoConnect": true,
+        "usetls": false,
+        "compatmode": false,
+        "protocolVersion": 4,
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

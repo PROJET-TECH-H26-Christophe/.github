@@ -61,6 +61,7 @@ Ce projet a pour objectif de :
 * [![Rocky Linux][RockyLinux]][RockyLinux-url]
 * [![Mosquitto][Mosquitto]][Mosquitto-url]
 * [![MariaDB][MariaDB]][MariaDB-url]
+* [![Node-RED][NodeRED]][NodeRED-url]
 
 
 <!-- GETTING STARTED -->
@@ -173,3 +174,6 @@ Il suffit de cloner le projet et suivre les documentations ci-dessous
 
 [Playwright.dev]: https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white
 [Playwright-url]: https://playwright.dev/
+
+[NodeRED]: https://img.shields.io/badge/Node--RED-8F0000?style=for-the-badge&logo=nodered&logoColor=white
+[NodeRED-url]: https://nodered.org

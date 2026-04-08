@@ -1,0 +1,116 @@
+[
+    {
+        "id": "277976419e1f5f3d",
+        "type": "tab",
+        "label": "Scanner",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "mqtt-scanner-validate",
+        "type": "mqtt in",
+        "z": "277976419e1f5f3d",
+        "name": "MQTT Validate Scanner",
+        "topic": "patate/scanner/validate",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "mqtt-broker-local",
+        "inputs": 0,
+        "x": 340,
+        "y": 300,
+        "wires": [
+            [
+                "format-validate-request"
+            ]
+        ]
+    },
+    {
+        "id": "format-validate-request",
+        "type": "function",
+        "z": "277976419e1f5f3d",
+        "name": "Formater requête",
+        "func": "msg.payload = { key: msg.payload.key };\nmsg.headers = {\n    \"Content-Type\": \"application/json\",\n    \"x-api-key\": env.get(\"NODERED_API_KEY\")\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 570,
+        "y": 300,
+        "wires": [
+            [
+                "http-validate-scanner"
+            ]
+        ]
+    },
+    {
+        "id": "http-validate-scanner",
+        "type": "http request",
+        "z": "277976419e1f5f3d",
+        "name": "POST /api/scanners/validate",
+        "method": "POST",
+        "ret": "obj",
+        "url": "http://127.0.0.1:3000/api/scanners/validate",
+        "headers": [],
+        "x": 810,
+        "y": 300,
+        "wires": [
+            [
+                "format-validate-response"
+            ]
+        ]
+    },
+    {
+        "id": "format-validate-response",
+        "type": "function",
+        "z": "277976419e1f5f3d",
+        "name": "Formater réponse",
+        "func": "if (msg.statusCode === 200) {\n    msg.topic = 'patate/scanner/response';\n    msg.payload = {\n        authorized: true,\n        scannerId: msg.payload.scanner.id\n    };\n} else {\n    msg.topic = 'patate/scanner/response';\n    msg.payload = {\n        authorized: false\n    };\n}\nreturn msg;",
+        "outputs": 1,
+        "x": 1050,
+        "y": 300,
+        "wires": [
+            [
+                "mqtt-scanner-response"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt-scanner-response",
+        "type": "mqtt out",
+        "z": "277976419e1f5f3d",
+        "name": "MQTT Réponse Scanner",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "broker": "mqtt-broker-local",
+        "x": 1290,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "mqtt-broker-local",
+        "type": "mqtt-broker",
+        "name": "Mosquitto Local",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "nodered-temperature",
+        "autoConnect": true,
+        "usetls": false,
+        "compatmode": false,
+        "protocolVersion": 4,
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

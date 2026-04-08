@@ -1,0 +1,108 @@
+[
+    {
+        "id": "heartbeat_tab",
+        "type": "tab",
+        "label": "Heartbeat",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "mqtt_heartbeat_in",
+        "type": "mqtt in",
+        "z": "heartbeat_tab",
+        "name": "MQTT Heartbeat",
+        "topic": "patate/status/heartbeat",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "mqtt-broker-local",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 200,
+        "y": 300,
+        "wires": [
+            [
+                "format_heartbeat"
+            ]
+        ]
+    },
+    {
+        "id": "format_heartbeat",
+        "type": "function",
+        "z": "heartbeat_tab",
+        "name": "Formater heartbeat",
+        "func": "const scannerId = msg.payload.scannerId;\n\nif (!scannerId) {\n    node.warn(\"Heartbeat sans scannerId ignoré\");\n    return null;\n}\n\nmsg.scannerId = scannerId;\nmsg.payload = {};\nmsg.headers = {\n    \"Content-Type\": \"application/json\",\n    \"x-api-key\": env.get(\"NODERED_API_KEY\")\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 430,
+        "y": 300,
+        "wires": [
+            [
+                "patch_heartbeat"
+            ]
+        ]
+    },
+    {
+        "id": "patch_heartbeat",
+        "type": "http request",
+        "z": "heartbeat_tab",
+        "name": "PATCH /api/scanners/:id/heartbeat",
+        "method": "PATCH",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:3000/api/scanners/{{{scannerId}}}/heartbeat",
+        "headers": [],
+        "x": 680,
+        "y": 300,
+        "wires": [
+            [
+                "debug_heartbeat"
+            ]
+        ]
+    },
+    {
+        "id": "debug_heartbeat",
+        "type": "debug",
+        "z": "heartbeat_tab",
+        "name": "Réponse heartbeat",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 920,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "mqtt-broker-local",
+        "type": "mqtt-broker",
+        "name": "Mosquitto Local",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "nodered-temperature",
+        "autoConnect": true,
+        "usetls": false,
+        "compatmode": false,
+        "protocolVersion": 4,
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

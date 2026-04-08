@@ -1,0 +1,113 @@
+[
+    {
+        "id": "bfcff5a3834f50d0",
+        "type": "tab",
+        "label": "Temperature Upload",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1483d8e96767aa5e",
+        "type": "mqtt in",
+        "z": "bfcff5a3834f50d0",
+        "name": "MQTT Température",
+        "topic": "patate/status/temperature",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "mqtt-broker-local",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 200,
+        "y": 300,
+        "wires": [
+            [
+                "format_temperature"
+            ]
+        ]
+    },
+    {
+        "id": "format_temperature",
+        "type": "function",
+        "z": "bfcff5a3834f50d0",
+        "name": "Formater body",
+        "func": "msg.payload = {\n    temperature: msg.payload.temperature,\n    humidity: msg.payload.humidity,\n    scannerId: msg.payload.scannerId,\n    productionRunId: msg.payload.productionRunId ?? null\n};\nmsg.headers = {\n    \"Content-Type\": \"application/json\",\n    \"x-api-key\": env.get(\"NODERED_API_KEY\")\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 300,
+        "wires": [
+            [
+                "post_temperature"
+            ]
+        ]
+    },
+    {
+        "id": "post_temperature",
+        "type": "http request",
+        "z": "bfcff5a3834f50d0",
+        "name": "POST /api/temperature",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:3000/api/temperature",
+        "headers": [],
+        "x": 660,
+        "y": 300,
+        "wires": [
+            [
+                "debug_temp"
+            ]
+        ]
+    },
+    {
+        "id": "debug_temp",
+        "type": "debug",
+        "z": "bfcff5a3834f50d0",
+        "name": "Réponse API",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "mqtt-broker-local",
+        "type": "mqtt-broker",
+        "name": "Mosquitto Local",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "nodered-temperature",
+        "autoConnect": true,
+        "usetls": false,
+        "compatmode": false,
+        "protocolVersion": 4,
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

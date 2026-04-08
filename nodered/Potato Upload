@@ -1,1 +1,146 @@
-
+[
+    {
+        "id": "ec50382863c8d2f1",
+        "type": "tab",
+        "label": "Potato Upload",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "46eb5261129d2f99",
+        "type": "http in",
+        "z": "ec50382863c8d2f1",
+        "name": "POST /upload",
+        "url": "/upload",
+        "method": "post",
+        "upload": true,
+        "skipBodyParsing": false,
+        "x": 150,
+        "y": 200,
+        "wires": [
+            [
+                "d3cafe9879e8f2d9"
+            ]
+        ]
+    },
+    {
+        "id": "d3cafe9879e8f2d9",
+        "type": "function",
+        "z": "ec50382863c8d2f1",
+        "name": "Extraire clé scanner",
+        "func": "const apiKey = msg.req.headers[\"x-api-key\"];\n\nif (!apiKey) {\n    msg.statusCode = 401;\n    msg.payload = { error: \"Clé API manquante\" };\n    return [null, msg];\n}\n\nconst file = msg.req.files?.[0];\n\nif (!file) {\n    msg.statusCode = 400;\n    msg.payload = { error: \"Aucun fichier reçu\" };\n    return [null, msg];\n}\n\nmsg.scannerKey = apiKey;\nmsg.uploadedFile = file;\nreturn [msg, null];",
+        "outputs": 2,
+        "x": 370,
+        "y": 200,
+        "wires": [
+            [
+                "4b7ab36522c47a6b"
+            ],
+            [
+                "a40f44d7edec6638"
+            ]
+        ]
+    },
+    {
+        "id": "4b7ab36522c47a6b",
+        "type": "function",
+        "z": "ec50382863c8d2f1",
+        "name": "Préparer validation",
+        "func": "msg.headers = {\n    \"x-api-key\": env.get(\"NODERED_API_KEY\"),\n    \"Content-Type\": \"application/json\"\n};\nmsg.payload = { key: msg.scannerKey };\nreturn msg;",
+        "outputs": 1,
+        "x": 590,
+        "y": 200,
+        "wires": [
+            [
+                "e47b183bc1206ff3"
+            ]
+        ]
+    },
+    {
+        "id": "e47b183bc1206ff3",
+        "type": "http request",
+        "z": "ec50382863c8d2f1",
+        "name": "POST /api/scanners/validate",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:3000/api/scanners/validate",
+        "x": 820,
+        "y": 200,
+        "wires": [
+            [
+                "810bc7fd66101e3d"
+            ]
+        ]
+    },
+    {
+        "id": "810bc7fd66101e3d",
+        "type": "function",
+        "z": "ec50382863c8d2f1",
+        "name": "Vérifier validation",
+        "func": "if (msg.statusCode !== 200) {\n    msg.statusCode = 401;\n    msg.payload = { error: \"Scanner non autorisé\" };\n    return [null, msg];\n}\n\nmsg.filename = \"/var/www/uploads/\" + Date.now() + \".jpg\";\nmsg.payload = msg.uploadedFile.buffer;\nreturn [msg, null];",
+        "outputs": 2,
+        "x": 1050,
+        "y": 200,
+        "wires": [
+            [
+                "c34cfe04ccbb539a"
+            ],
+            [
+                "a40f44d7edec6638"
+            ]
+        ]
+    },
+    {
+        "id": "c34cfe04ccbb539a",
+        "type": "file",
+        "z": "ec50382863c8d2f1",
+        "name": "Sauvegarder image",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 1280,
+        "y": 200,
+        "wires": [
+            [
+                "4ae6ee15a2080d70"
+            ]
+        ]
+    },
+    {
+        "id": "4ae6ee15a2080d70",
+        "type": "function",
+        "z": "ec50382863c8d2f1",
+        "name": "Réponse OK",
+        "func": "msg.statusCode = 200;\nmsg.payload = {\n    message: \"Image uploadée avec succès\",\n    file: msg.filename\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 1480,
+        "y": 200,
+        "wires": [
+            [
+                "9f24980e71e5f23e"
+            ]
+        ]
+    },
+    {
+        "id": "9f24980e71e5f23e",
+        "type": "http response",
+        "z": "ec50382863c8d2f1",
+        "name": "HTTP Response OK",
+        "x": 1680,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "a40f44d7edec6638",
+        "type": "http response",
+        "z": "ec50382863c8d2f1",
+        "name": "HTTP Response Erreur",
+        "x": 1680,
+        "y": 300,
+        "wires": []
+    }
+]
